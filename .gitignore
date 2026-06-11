@@ -1,0 +1,18 @@
+# Julia environment resolution is per-developer (siblings are dev'd locally).
+Manifest.toml
+docs/Manifest.toml
+
+# Documenter build output
+docs/build/
+docs/site/
+
+# Coverage
+*.cov
+*.jl.*.cov
+*.jl.cov
+*.jl.mem
+lcov.info
+
+# Editor / OS
+.vscode/
+.DS_Store
