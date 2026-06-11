@@ -22,8 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.10'     # minimum supported (Makie stack requires >= 1.10)
-          - '1'        # latest stable 1.x
+          - '1'        # latest stable 1.x; 1.10 cannot resolve the current
+                       # dependency stack (Downloads stdlib pin conflict)
         os:
           - ubuntu-latest
         arch:
