@@ -22,7 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.9'      # minimum supported
+          - '1.10'     # minimum supported (Makie stack requires >= 1.10)
           - '1'        # latest stable 1.x
         os:
           - ubuntu-latest
@@ -46,7 +46,6 @@ jobs:
               PackageSpec(url = "https://github.com/JuliaTDA/TDAmapper.jl"),
               PackageSpec(url = "https://github.com/JuliaTDA/TDAplots.jl"),
               PackageSpec(url = "https://github.com/JuliaTDA/Ripserer.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/PersistenceDiagrams.jl"),
               PackageSpec(url = "https://github.com/JuliaTDA/ToMATo.jl"),
             ])
             Pkg.instantiate()'

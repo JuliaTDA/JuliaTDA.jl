@@ -36,7 +36,6 @@ jobs:
               PackageSpec(url = "https://github.com/JuliaTDA/TDAmapper.jl"),
               PackageSpec(url = "https://github.com/JuliaTDA/TDAplots.jl"),
               PackageSpec(url = "https://github.com/JuliaTDA/Ripserer.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/PersistenceDiagrams.jl"),
               PackageSpec(url = "https://github.com/JuliaTDA/ToMATo.jl"),
             ])
             Pkg.develop(PackageSpec(path = pwd()))
