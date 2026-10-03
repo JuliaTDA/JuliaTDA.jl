@@ -22,8 +22,8 @@ vectorizations, and ToMATo clustering.
 | [MetricSpaces.jl](https://github.com/JuliaTDA/MetricSpaces.jl) | Geometry foundation | `EuclideanSpace`, distances, samplers, filters (`eccentricity`, `kde`, `dtm_density`, `knn_density`), transformations (`center`, `scale`, `standardize`, `embed`), `geodesic_distance`, `nerve_1d`/`nerve_2d`, and the `Datasets` submodule (`sphere`, `torus`, `mammoth`, …) |
 | [TDAmapper.jl](https://github.com/JuliaTDA/TDAmapper.jl) | Mapper | `mapper`, `classical_mapper`, `ball_mapper`; cover / refiner / nerve submodules; the Tables.jl helpers `euclidean_space` and `node_statistics` |
 | [TDAplots.jl](https://github.com/JuliaTDA/TDAplots.jl) | Plotting (Makie) | `mapper_plot`, `metricspace_plot`, the interactive `mapper_explorer`, persistence / barcode plots, 21 graph layouts |
-| [Ripserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | Persistent homology | `ripserer`, `Rips`, `Alpha`, `Cubical`, `EdgeCollapsedRips`, … |
-| [PersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | Diagrams & ML | `PersistenceDiagram`, `Bottleneck`, `Wasserstein`, `Landscape`, `PersistenceImage`, `BettiCurve`, entropy curves, MLJ integration |
+| [TDARipserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | Persistent homology | `ripserer`, `Rips`, `Alpha`, `Cubical`, `EdgeCollapsedRips`, … |
+| [TDAPersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | Diagrams & ML | `PersistenceDiagram`, `Bottleneck`, `Wasserstein`, `Landscape`, `PersistenceImage`, `BettiCurve`, entropy curves, MLJ integration |
 | [ToMATo.jl](https://github.com/JuliaTDA/ToMATo.jl) | Clustering | `tomato`, `proximity_graph` |
 
 ### How they compose
@@ -31,7 +31,7 @@ vectorizations, and ToMATo clustering.
 ```
 MetricSpaces  ──►  TDAmapper  ──►  TDAplots
                                       │
-Ripserer  ──►  PersistenceDiagrams ◄──┘   (Ripserer re-exports the basics)
+TDARipserer  ──►  TDAPersistenceDiagrams ◄──┘   (TDARipserer re-exports the basics)
 
 ToMATo  (density-based clustering, built on MetricSpaces)
 ```
@@ -112,11 +112,16 @@ If you have the repositories checked out side by side locally, you can instead
 
 ```julia
 using Pkg
-for p in ("MetricSpaces", "TDAmapper", "TDAplots", "Ripserer",
-          "PersistenceDiagrams", "ToMATo")
-    Pkg.develop(PackageSpec(path = "../$(p).jl"))
-end
+Pkg.develop([PackageSpec(path = "../$(p).jl") for p in
+    ("MetricSpaces", "TDAmapper", "TDAplots", "TDARipserer",
+     "TDAPersistenceDiagrams", "ToMATo")])
 ```
+
+`TDARipserer` and `TDAPersistenceDiagrams` are independent experimental forks
+with their own UUIDs and version series. Their GitHub repository URLs still
+use the original slugs, while local checkout directories and Julia imports
+use the new names. The public functions (`ripserer`, `PersistenceDiagram`,
+etc.) remain re-exported by `using JuliaTDA`.
 
 > The `Manifest.toml` is intentionally **not** committed, so each developer
 > resolves against their own local checkouts / forks.
@@ -139,5 +144,5 @@ persistent homology for ML, and ToMATo clustering), lives at
 ## License
 
 MIT. See the individual packages for their respective licenses
-(Ripserer and PersistenceDiagrams originate from
+(TDARipserer and TDAPersistenceDiagrams originate from
 [mtsch](https://github.com/mtsch)'s upstream work).

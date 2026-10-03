@@ -3,7 +3,7 @@ using JuliaTDA
 
 # The constituent packages own the docstrings we surface on the API page; we
 # reach them through JuliaTDA's re-exports.
-using JuliaTDA: MetricSpaces, TDAmapper, TDAplots, PersistenceDiagrams, ToMATo
+using JuliaTDA: MetricSpaces, TDAmapper, TDAplots, TDAPersistenceDiagrams, ToMATo
 
 # CairoMakie is loaded so the @example blocks in the example pages can render
 # static figures into the build.
@@ -15,7 +15,7 @@ makedocs(;
     # Include the constituent modules so Documenter accepts the docstrings that
     # the API page surfaces from them (they are re-exported by JuliaTDA).
     modules = [JuliaTDA, MetricSpaces, TDAmapper, TDAplots,
-               PersistenceDiagrams, ToMATo],
+               TDAPersistenceDiagrams, ToMATo],
     sitename = "JuliaTDA.jl",
     authors = "G. Vituri and contributors",
     # The constituent packages are `develop`ed from local checkouts / forks, so

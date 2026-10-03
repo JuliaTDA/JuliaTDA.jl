@@ -27,12 +27,12 @@ TDAplots.tomato_persistence_plot
 TDAplots.tomato_graph_plot
 ```
 
-## Diagram vectorizations (PersistenceDiagrams.jl)
+## Diagram vectorizations (TDAPersistenceDiagrams.jl)
 
 ```@docs
-PersistenceDiagrams.Landscape
-PersistenceDiagrams.BettiCurve
-PersistenceDiagrams.PersistenceImage
+TDAPersistenceDiagrams.Landscape
+TDAPersistenceDiagrams.BettiCurve
+TDAPersistenceDiagrams.PersistenceImage
 ```
 
 ## Clustering (ToMATo.jl)

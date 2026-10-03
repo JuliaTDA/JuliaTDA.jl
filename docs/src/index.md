@@ -36,8 +36,8 @@ A single `using JuliaTDA` brings the entire stack into scope:
 | [MetricSpaces.jl](https://github.com/JuliaTDA/MetricSpaces.jl) | Geometry foundation: `EuclideanSpace`, distances, samplers, filters, transformations, and the `Datasets` submodule |
 | [TDAmapper.jl](https://github.com/JuliaTDA/TDAmapper.jl) | The Mapper algorithm: `mapper`, `classical_mapper`, `ball_mapper`, plus Tables.jl helpers |
 | [TDAplots.jl](https://github.com/JuliaTDA/TDAplots.jl) | Makie-based plotting, including the interactive `mapper_explorer` |
-| [Ripserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | Persistent homology: `ripserer` and several filtrations |
-| [PersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | Persistence diagrams, distances, and vectorizations for ML |
+| [TDARipserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | Persistent homology: `ripserer` and several filtrations |
+| [TDAPersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | Persistence diagrams, distances, and vectorizations for ML |
 | [ToMATo.jl](https://github.com/JuliaTDA/ToMATo.jl) | Topological mode-seeking clustering: `tomato`, `proximity_graph` |
 
 ### How the packages compose
@@ -45,16 +45,16 @@ A single `using JuliaTDA` brings the entire stack into scope:
 ```
 MetricSpaces  ──►  TDAmapper  ──►  TDAplots
                                       │
-Ripserer  ──►  PersistenceDiagrams ◄──┘   (Ripserer re-exports the basics)
+TDARipserer  ──►  TDAPersistenceDiagrams ◄──┘   (TDARipserer re-exports the basics)
 
 ToMATo  (density-based clustering, built on MetricSpaces)
 ```
 
 * **MetricSpaces → TDAmapper → TDAplots** is the Mapper pipeline. You start from
   a metric space, run the Mapper algorithm to get a graph, and plot it.
-* **Ripserer → PersistenceDiagrams** is the persistent-homology pipeline.
-  Ripserer computes diagrams; PersistenceDiagrams analyses and vectorizes them.
-  Ripserer already re-exports the *basics* of PersistenceDiagrams (`birth`,
+* **TDARipserer → TDAPersistenceDiagrams** is the persistent-homology pipeline.
+  TDARipserer computes diagrams; TDAPersistenceDiagrams analyses and vectorizes them.
+  TDARipserer already re-exports the *basics* of TDAPersistenceDiagrams (`birth`,
   `death`, `persistence`, `barcode`, …) as the very same bindings, so there is
   no name clash.
 * **ToMATo** is an independent clustering algorithm that also builds on

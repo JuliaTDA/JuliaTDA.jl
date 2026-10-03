@@ -94,6 +94,11 @@ const DS = JuliaTDA.MetricSpaces.Datasets
         h1 = result[2]
         @test length(h1) ≥ 1              # the loop is detected
         @test persistence(h1[1]) > 0
+        # The computation and downstream plotting share the fork's diagram type.
+        @test TDARipserer.PersistenceDiagram === TDAPersistenceDiagrams.PersistenceDiagram
+        @test TDAplots.PersistenceDiagram === TDAPersistenceDiagrams.PersistenceDiagram
+        @test h1 isa TDAPersistenceDiagrams.PersistenceDiagram
+        @test ripserer === TDARipserer.ripserer
     end
 
     @testset "diagram tools & vectorizers exist and run" begin

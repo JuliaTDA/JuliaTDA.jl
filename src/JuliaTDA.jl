@@ -11,8 +11,8 @@ brings the whole Topological Data Analysis (TDA) stack into scope.
 | Geometry foundation | [MetricSpaces.jl](https://github.com/JuliaTDA/MetricSpaces.jl) | `EuclideanSpace`, distances, samplers, filters (`eccentricity`, `kde`, `dtm_density`, `knn_density`), transformations, `Datasets` submodule |
 | Mapper | [TDAmapper.jl](https://github.com/JuliaTDA/TDAmapper.jl) | `mapper`, `classical_mapper`, `ball_mapper`, covers/refiners/nerves, `euclidean_space`/`node_statistics` (Tables.jl) |
 | Plotting | [TDAplots.jl](https://github.com/JuliaTDA/TDAplots.jl) | `mapper_plot`, `metricspace_plot`, `mapper_explorer`, persistence/barcode plots, graph layouts |
-| Persistent homology | [Ripserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | `ripserer`, `Rips`, `Alpha`, `Cubical`, `EdgeCollapsedRips`, … |
-| Diagrams & ML | [PersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | `PersistenceDiagram`, `Bottleneck`, `Wasserstein`, `Landscape`, `PersistenceImage`, `BettiCurve`, … |
+| Persistent homology | [TDARipserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | `ripserer`, `Rips`, `Alpha`, `Cubical`, `EdgeCollapsedRips`, … |
+| Diagrams & ML | [TDAPersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | `PersistenceDiagram`, `Bottleneck`, `Wasserstein`, `Landscape`, `PersistenceImage`, `BettiCurve`, … |
 | Clustering | [ToMATo.jl](https://github.com/JuliaTDA/ToMATo.jl) | `tomato`, `proximity_graph` |
 
 ## How the packages compose
@@ -20,7 +20,7 @@ brings the whole Topological Data Analysis (TDA) stack into scope.
 ```
 MetricSpaces  ──►  TDAmapper  ──►  TDAplots
                                        │
-Ripserer  ──►  PersistenceDiagrams ◄───┘   (Ripserer re-exports the basics)
+TDARipserer  ──►  TDAPersistenceDiagrams ◄───┘   (TDARipserer re-exports the basics)
 
 ToMATo  (builds on MetricSpaces; density-based clustering)
 ```
@@ -76,16 +76,16 @@ import MetricSpaces
 using MetricSpaces: center, eccentricity
 export center, eccentricity
 
-# Persistent homology. Ripserer re-exports the *basics* of PersistenceDiagrams
+# Persistent homology. TDARipserer re-exports the *basics* of TDAPersistenceDiagrams
 # (birth, death, persistence, dim, threshold, barcode, …) as the SAME bindings
-# it imports from PersistenceDiagrams, so re-exporting both packages introduces
+# it imports from TDAPersistenceDiagrams, so re-exporting both packages introduces
 # no ambiguity warning — the overlapping names resolve to one binding.
-@reexport using Ripserer
+@reexport using TDARipserer
 
 # The full diagram / vectorization API (Bottleneck, Wasserstein, Landscape,
 # PersistenceImage, BettiCurve, the MLJ vectorizers, …). The names it shares
-# with Ripserer are the identical PersistenceDiagrams bindings.
-@reexport using PersistenceDiagrams
+# with TDARipserer are the identical TDAPersistenceDiagrams bindings.
+@reexport using TDAPersistenceDiagrams
 
 # ToMATo clustering. We must NOT do `using ToMATo` (plain), because that would
 # pull ALL of ToMATo's exports — including its own `knn_density` — into this
