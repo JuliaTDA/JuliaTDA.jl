@@ -2,7 +2,7 @@
 
 Notable changes to JuliaTDA are recorded here.
 
-## Unreleased
+## v0.1.0 — 5 November 2026
 
 - Consolidate the P1–P3 umbrella integrations, runnable examples, numerical
   reproduction assets, documentation and bundled MultiparameterPersistence.
@@ -17,7 +17,7 @@ Notable changes to JuliaTDA are recorded here.
   to CI, alongside Julia 1.10 and current stable checks.
 - Link to the standalone MapperStudio application. The original integrated
   copy under `apps/MapperStudio` is retained as a historical snapshot.
-- Keep registration, release tags and publication deferred.
+- Publish the first tagged source release; General registration remains deferred.
 
 ## Independent JuliaTDA forks — 3 October 2026
 

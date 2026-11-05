@@ -1,6 +1,6 @@
 # JuliaTDA ecosystem roadmap
 
-**Canonical roadmap — reviewed 5 November 2026. Publication and registration remain deferred.**
+**Canonical roadmap — reviewed 5 November 2026. GitHub source releases authorized; General registration remains deferred.**
 
 This is the single source of truth for unfinished work across the JuliaTDA ecosystem. It supersedes the planning sections in `gap-analysis.md`, `2026 Roadmap.md`, `2026 Roadmap — Phase 5 Addendum.md`, and `2026 Roadmap — July 2026 Review.md`. Those files remain useful as historical reviews, but new status and priority decisions belong here.
 
@@ -119,6 +119,14 @@ Validation and follow-up:
 | **P3.5** | ✅ **Complete** — Remaining diagram kernels | Low–medium | `PersistenceScaleSpaceKernel` and `PersistenceWeightedGaussianKernel`, including linear weighted embeddings and optional outer Gaussian kernels. Analytical paper formulas, Gram PSD, diagonal/empty behavior and parameter validation are tested. Essential intervals are ignored, with the custom-weight stability scope documented. |
 
 Validation: complete affected-package suites and Aqua passed on Julia 1.12.5; final P3 tests passed on Julia 1.6.7 and 1.12.5. The JuliaTDA integration checks, runnable examples and Documenter P3 page build also passed. Legacy doctests skipped by their existing version gates are recorded separately in the validation report.
+
+## GitHub release follow-up — 5 November 2026
+
+The owner authorized source pushes and GitHub releases after the maintenance
+review below. Target versions are JuliaTDA 0.1.0, TDARipserer 0.1.0 and TDAmapper
+0.1.1. The earlier notes about holding source pushes describe the preceding
+maintenance phase. General registry submission remains deferred; a GitHub
+release alone does not make `Pkg.add("JuliaTDA")` available from General.
 
 ## Maintenance review — 5 November 2026
 
