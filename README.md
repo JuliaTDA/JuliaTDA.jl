@@ -174,6 +174,10 @@ julia docs/setup.jl
 julia --project=docs docs/make.jl
 ```
 
+The [roadmap](ROADMAP.md) records current scope and deferred publication. The
+[November maintenance report](docs/maintenance/2026-11-05.md) records the source
+installation checks, dependency revisions, test results and issue reconciliation.
+
 ## License
 
 MIT. See the individual packages for their respective licenses
