@@ -3,7 +3,8 @@ using JuliaTDA
 
 # The constituent packages own the docstrings we surface on the API page; we
 # reach them through JuliaTDA's re-exports.
-using JuliaTDA: MetricSpaces, TDAmapper, TDAplots, TDAPersistenceDiagrams, ToMATo
+using JuliaTDA: MetricSpaces, TDAmapper, TDAplots, TDARipserer, TDAPersistenceDiagrams,
+    MultiparameterPersistence, PersistenceInference, ToMATo
 
 # CairoMakie is loaded so the @example blocks in the example pages can render
 # static figures into the build.
@@ -14,8 +15,8 @@ DocMeta.setdocmeta!(JuliaTDA, :DocTestSetup, :(using JuliaTDA); recursive = true
 makedocs(;
     # Include the constituent modules so Documenter accepts the docstrings that
     # the API page surfaces from them (they are re-exported by JuliaTDA).
-    modules = [JuliaTDA, MetricSpaces, TDAmapper, TDAplots,
-               TDAPersistenceDiagrams, ToMATo],
+    modules = [JuliaTDA, MetricSpaces, TDAmapper, TDAplots, TDARipserer,
+               TDAPersistenceDiagrams, MultiparameterPersistence, PersistenceInference, ToMATo],
     sitename = "JuliaTDA.jl",
     authors = "G. Vituri and contributors",
     # The constituent packages are `develop`ed from local checkouts / forks, so
@@ -40,21 +41,36 @@ makedocs(;
     format = Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
         canonical = "https://JuliaTDA.github.io/JuliaTDA.jl",
+        repolink = "https://github.com/JuliaTDA/JuliaTDA.jl",
         edit_link = "main",
         assets = String[],
     ),
     pages = [
         "Home" => "index.md",
+        "Your first shape analysis" => "getting_started.md",
+        "Choosing a workflow" => "workflows.md",
+        "JuliaTDA Studio" => "studio.md",
+        "Reading topological results" => "concepts.md",
         "Examples" => [
             "Mapper exploration" => "examples/mapper_exploration.md",
             "Persistent homology for ML" => "examples/ph_for_ml.md",
+            "Tuning a PH pipeline" => "examples/tuned_ph_pipeline.md",
+            "P1 workflows" => "examples/p1.md",
             "ToMATo clustering" => "examples/tomato_clustering.md",
+            "P2 expansion workflows" => "examples/p2.md",
+            "Changing shapes and comparing diagrams" => "examples/p3.md",
         ],
-        "API reference" => "api.md",
+        "Troubleshooting and reproducibility" => "troubleshooting.md",
+        "API reference" => [
+            "Geometry, Mapper and visualization" => "api.md",
+            "Homology and inference" => "api_analysis.md",
+        ],
     ],
 )
 
-deploydocs(;
-    repo = "github.com/JuliaTDA/JuliaTDA.jl",
-    devbranch = "main",
-)
+if get(ENV, "JULIATDA_DOCS_DEPLOY", "false") == "true"
+    deploydocs(;
+        repo = "github.com/JuliaTDA/JuliaTDA.jl",
+        devbranch = "main",
+    )
+end

@@ -1,0 +1,41 @@
+julia_version = "1.12.5"
+threads = 1
+dataset_sha256 = "2eb0e05331e681a6046a761ba14b81aaee845e24883a5b42059b1db3d31d12b7"
+config_sha256 = "d6108c55ef83a5127b394ff5460b6fce439bb984809daeb3e6e94854183fd5d9"
+manifest_sha256 = "2d9de9d1f93542da9c5170f934c8416267201d140730bc635d1f822617060da2"
+environment_lock_sha256 = "2d9de9d1f93542da9c5170f934c8416267201d140730bc635d1f822617060da2"
+
+[sources.TDAmapper]
+git_head = "1d483ef3f4d3c0a0d318ba4539b7b419df1f8217"
+dirty = true
+source_sha256 = "ad00b9a721d222f01210f6d90c0ddfcd2c5dc6f8f4cdb70a20e145e6edf63134"
+
+[sources.TDARipserer]
+git_head = "9583a3b7e64565f11f869155b346b675eb508740"
+dirty = true
+source_sha256 = "98cb5d5930156e15b59e9c2145a83df689a377ebe2407e811325864b5a03bfa7"
+
+[sources.MetricSpaces]
+git_head = "08f1bb4f84c7a851ad6f06ae60cc1ccedf80916b"
+dirty = true
+source_sha256 = "e2e6797e1311132514039c3bc6f4a5623d3b03560f01264f979e977e68ab63e3"
+
+[sources.ToMATo]
+git_head = "99e38ea4b6ed121f4109e7bd9d544b432b9cf8f4"
+dirty = true
+source_sha256 = "7343d5f32f142cb34681cd1052634a32afa6016781471b2c8ef10b49e271179e"
+
+[sources.TDAplots]
+git_head = "cf60f7a8ffddecd55dca33a7c88bebd2699dd34a"
+dirty = true
+source_sha256 = "1d428d6c606a7c67a55131bbc2dc7fef5c9b12607b4972a59578defa2b3f43bf"
+
+[sources.JuliaTDA]
+git_head = "04032f6c29efae2ee0e573a7e72171d6b81af29d"
+dirty = true
+source_sha256 = "1964cd2cbc955aafa3679edb7de866c3348a577bc43bc21ca44364ed07dcd29a"
+
+[sources.TDAPersistenceDiagrams]
+git_head = "c78952ba99b0decf03ed55fbcf93adb48d8c4fd0"
+dirty = true
+source_sha256 = "48da2cfae6e6458c47aadc7d7c8a4a6da298e3489a77c7c6a2590f7baf8696e3"

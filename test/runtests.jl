@@ -1,4 +1,5 @@
 using JuliaTDA
+using Aqua
 # Submodules carrying the Mapper building blocks (covers, refiners, nerves)
 # travel up the re-export chain and are exported by JuliaTDA, but their
 # *contents* (R1Cover, Uniform, DBscan, SimpleNerve, …) must be brought in
@@ -6,6 +7,13 @@ using JuliaTDA
 using JuliaTDA.ImageCovers, JuliaTDA.IntervalCovers, JuliaTDA.Refiners, JuliaTDA.Nerves
 using Statistics: mean, std
 using Test
+
+include("p3.jl")
+include("p1.jl")
+
+Aqua.test_all(JuliaTDA)
+
+include("p2_integration.jl")
 
 # Datasets live in a submodule of MetricSpaces. Access is via qualification;
 # we alias it here for brevity. (Doing `using ...Datasets: name` is avoided on

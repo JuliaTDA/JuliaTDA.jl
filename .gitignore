@@ -1,6 +1,9 @@
 # Julia environment resolution is per-developer (siblings are dev'd locally).
 Manifest.toml
 docs/Manifest.toml
+examples/p2/Manifest.toml
+lib/MultiparameterPersistence/Manifest.toml
+dev/
 
 # Documenter build output
 docs/build/

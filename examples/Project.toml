@@ -1,0 +1,19 @@
+[deps]
+JuliaTDA = "20644ed6-c2e1-466c-9b0c-8a23c0601dc5"
+MLJ = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
+MLJDecisionTreeInterface = "c6f25543-311c-4c74-83dc-3ea6d1015661"
+MetricSpaces = "737298cd-3e4b-40c4-a4ce-863151543a8d"
+MultiparameterPersistence = "7549c581-73e9-4ea7-bfa2-841382f003ce"
+PersistenceInference = "118e6604-bb3b-4764-bf76-cf6e7c19a9bd"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+TDAPersistenceDiagrams = "bbe17acd-c4ea-4f01-a2b8-42969f873a90"
+TDARipserer = "d8d97730-eb17-4b7a-9fb6-200f7d8ece7d"
+TDAmapper = "90314d98-8742-41ec-badb-bb392eb26b11"
+TDAplots = "a34ba9c9-258a-4d5b-bbaf-9af986d00e54"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+ToMATo = "9853e363-5d33-44e1-8657-922a46906663"
+
+[compat]
+MLJ = "0.20, 0.21, 0.22, 0.23"
+MLJDecisionTreeInterface = "0.4"
+julia = "1.10"

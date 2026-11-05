@@ -13,7 +13,9 @@ brings the whole Topological Data Analysis (TDA) stack into scope.
 | Plotting | [TDAplots.jl](https://github.com/JuliaTDA/TDAplots.jl) | `mapper_plot`, `metricspace_plot`, `mapper_explorer`, persistence/barcode plots, graph layouts |
 | Persistent homology | [TDARipserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | `ripserer`, `Rips`, `Alpha`, `Cubical`, `EdgeCollapsedRips`, … |
 | Diagrams & ML | [TDAPersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | `PersistenceDiagram`, `Bottleneck`, `Wasserstein`, `Landscape`, `PersistenceImage`, `BettiCurve`, … |
+| Statistical inference | [PersistenceInference.jl](https://github.com/JuliaTDA/PersistenceInference.jl) | `confidence_band`, `multiplier_bootstrap`, `max_persistence_significance`, `independence_test`, … |
 | Clustering | [ToMATo.jl](https://github.com/JuliaTDA/ToMATo.jl) | `tomato`, `proximity_graph` |
+| Multiparameter | MultiparameterPersistence (bundled) | `bifiltration`, `hilbert_function`, `bigraded_betti`, `euler_surface`, signed measures and MLJ features |
 
 ## How the packages compose
 
@@ -43,11 +45,14 @@ reachable, fully qualified, as `JuliaTDA.ToMATo.knn_density`.
 
 ```julia
 using JuliaTDA
+using JuliaTDA.ImageCovers, JuliaTDA.IntervalCovers, JuliaTDA.Refiners, JuliaTDA.Nerves
+using Statistics: mean
+using CairoMakie
 
-X = JuliaTDA.MetricSpaces.Datasets.sphere(500)   # 500 points on a circle
-f = eccentricity(X)                              # per-point filter
+X = JuliaTDA.MetricSpaces.Datasets.sphere(240)   # 240 points on a circle
+f = first.(X)                                 # x-coordinate filter
 M = classical_mapper(X, R1Cover(f, Uniform(length = 10, expansion = 0.3)),
-                     DBscan(), SimpleNerve())
+                     DBscan(radius = 0.2), SimpleNerve())
 mapper_plot(M; node_values = [mean(f[c]) for c in M.C])
 ```
 """
@@ -86,6 +91,12 @@ export center, eccentricity
 # PersistenceImage, BettiCurve, the MLJ vectorizers, …). The names it shares
 # with TDARipserer are the identical TDAPersistenceDiagrams bindings.
 @reexport using TDAPersistenceDiagrams
+
+# Inference uses the same diagram and PH bindings as the two packages above.
+@reexport using PersistenceInference
+
+# Finite-grid multiparameter invariants; source is bundled under lib/.
+@reexport using MultiparameterPersistence
 
 # ToMATo clustering. We must NOT do `using ToMATo` (plain), because that would
 # pull ALL of ToMATo's exports — including its own `knn_density` — into this

@@ -10,8 +10,10 @@ dense core of the data. We close with the interactive `mapper_explorer`.
 
 Any [Tables.jl](https://github.com/JuliaData/Tables.jl)-compatible source works.
 Here we use a plain `NamedTuple` of columns — a `DataFrame` would behave
-identically. The data is a circle of points; we also carry a derived radius
-column `r` to summarise later.
+identically. The data is a sampled circle with a short branch extending to the
+right. We also carry a derived radius column `r` to summarize later. It is
+metadata rather than an extra geometric coordinate, so the branch's shape is
+determined by `(x, y)` alone.
 
 ```@example mapper
 using JuliaTDA
@@ -23,8 +25,10 @@ CairoMakie.activate!(type = "png")
 const DS = JuliaTDA.MetricSpaces.Datasets   # the Datasets submodule of MetricSpaces
 
 Random.seed!(42)
-n = 600
-base = DS.sphere(n)                                  # n points on a circle
+n = 240
+circle_points = DS.sphere(n)
+branch = [[x, 0.02 * randn()] for x in range(1.0, 2.0; length = 45)]
+base = vcat(circle_points, branch)
 tbl = (x = [p[1] for p in base],
        y = [p[2] for p in base],
        r = [sqrt(p[1]^2 + p[2]^2) for p in base])
@@ -94,6 +98,10 @@ node's mean against the global distribution for every numeric column. The
 z-score columns (`*_z`) are the quickest way to see *which variable makes a
 node — for example the tip of a flare — stand out*.
 
+This is a descriptive comparison. Nodes overlap and the extremal node is
+selected after inspection; these z-scores are not independent hypothesis
+tests or evidence of a discovered subpopulation.
+
 ```@example mapper
 ns = node_statistics(M, tbl; stats = (mean, std))
 keys(ns)
@@ -109,9 +117,10 @@ flare_node = argmax(abs.(ns.r_z))
 
 [`mapper_explorer`](@ref) returns a `MapperExplorer` with a linked two-panel
 figure: the Mapper graph on one side, the underlying point cloud on the other.
-Hovering a node shows its statistics (via Makie's `DataInspector`), and clicking
-a node highlights its member points in the data panel. Its `.selected_node`
-field is an `Observable` you can listen to.
+Clicking a node highlights its member points in the data panel. With
+`inspector=true`, hovering shows the built-in node tooltip (including its id
+and size); the separately computed table summaries remain available in `ns`.
+Its `.selected_node` field is an `Observable` you can listen to.
 
 !!! note "Backend"
     Interactivity (hover, click) needs an interactive Makie backend such as
@@ -120,9 +129,9 @@ field is an `Observable` you can listen to.
 
 ```julia
 using GLMakie                       # interactive backend
-expl = mapper_explorer(M; node_values = [mean(ecc[c]) for c in M.C])
+expl = mapper_explorer(M; node_values = [mean(ecc[c]) for c in M.C], inspector = true)
 expl.figure                         # the linked two-panel figure
-expl.selected_node                  # Observable{Int} — updates on click
+expl.selected_node                  # Observable{Union{Nothing,Int}} — updates on click
 ```
 
 ```@example mapper

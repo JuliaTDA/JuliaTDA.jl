@@ -6,6 +6,13 @@
 CurrentModule = JuliaTDA
 ```
 
+New here? Start with [Your first shape analysis](getting_started.md), an
+executed circle-to-PH-and-Mapper tutorial. Use [Choosing a workflow](workflows.md)
+to pick a method, [Reading topological results](concepts.md) to interpret it,
+and [Troubleshooting and reproducibility](troubleshooting.md) when moving to
+your own data. Registration is deferred; the installation guide uses local
+checkouts of the current stack.
+
 ## What is Topological Data Analysis?
 
 **Topological Data Analysis (TDA)** is a family of techniques that study the
@@ -39,6 +46,8 @@ A single `using JuliaTDA` brings the entire stack into scope:
 | [TDARipserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | Persistent homology: `ripserer` and several filtrations |
 | [TDAPersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | Persistence diagrams, distances, and vectorizations for ML |
 | [ToMATo.jl](https://github.com/JuliaTDA/ToMATo.jl) | Topological mode-seeking clustering: `tomato`, `proximity_graph` |
+| [PersistenceInference.jl](https://github.com/JuliaTDA/PersistenceInference.jl) | Diagram resampling, curve confidence bands, explicit-null maximum-persistence and independence tests |
+| MultiparameterPersistence (bundled in `lib/`) | Small-complex exact F₂ Hilbert/Koszul Betti/Euler invariants, signed measures and MLJ features |
 
 ### How the packages compose
 
@@ -59,6 +68,12 @@ ToMATo  (density-based clustering, built on MetricSpaces)
   no name clash.
 * **ToMATo** is an independent clustering algorithm that also builds on
   MetricSpaces.
+* **PersistenceInference** works on point clouds or collections of diagrams,
+  depending on the method. Its tests require an appropriate sampling/null
+  design; see [Choosing a workflow](workflows.md).
+* **MultiparameterPersistence** is a separate package bundled under `lib/`.
+  It supplies reference algorithms for finite two-parameter grids rather than
+  a general multiparameter barcode.
 
 ### Name resolution
 
@@ -80,21 +95,29 @@ summarise a Mapper's nodes against the original table with
 
 ### Development install (now)
 
-The pure-Julia packages are not yet registered in the General registry, so
-`develop` the sibling repositories from their GitHub URLs:
+Registration is deferred. From a local JuliaTDA.jl checkout, develop the bundled
+multiparameter package and the sibling repositories in the same call:
 
 ```julia
 using Pkg
+Pkg.activate(".") # run from a local JuliaTDA.jl checkout
 Pkg.develop([
+    PackageSpec(path = "lib/MultiparameterPersistence"),
     PackageSpec(url = "https://github.com/JuliaTDA/MetricSpaces.jl"),
     PackageSpec(url = "https://github.com/JuliaTDA/TDAmapper.jl"),
     PackageSpec(url = "https://github.com/JuliaTDA/TDAplots.jl"),
     PackageSpec(url = "https://github.com/JuliaTDA/Ripserer.jl"),
     PackageSpec(url = "https://github.com/JuliaTDA/PersistenceDiagrams.jl"),
     PackageSpec(url = "https://github.com/JuliaTDA/ToMATo.jl"),
+    PackageSpec(url = "https://github.com/JuliaTDA/PersistenceInference.jl"),
 ])
-Pkg.develop(PackageSpec(url = "https://github.com/JuliaTDA/JuliaTDA.jl"))
+Pkg.instantiate()
 ```
+
+For the current sibling checkouts (including unpublished changes), follow the
+isolated-environment instructions in [Your first shape analysis](getting_started.md).
+The umbrella requires Julia 1.10 or later. A plotting backend is separate;
+`using JuliaTDA` does not activate one.
 
 ### Registry install (later)
 
@@ -113,6 +136,17 @@ using Pkg; Pkg.add("JuliaTDA")
   → `Landscape`/`PersistenceImage` feature matrix ready for a classifier.
 * [ToMATo clustering](@ref) — a noisy multi-blob dataset → density →
   `proximity_graph` → `tomato` → a scatter coloured by cluster.
+* [P2 expansion workflows](@ref) — Euler descriptors, multiparameter invariants,
+  optimal chains, time series, cubical images and trainable Mapper filters.
+* [Inference, differentiable PH, descriptors and tuning](@ref) — population
+  mean bands and an introduction to optional learning integrations.
+* [Changing shapes and comparing diagrams](examples/p3.md) — landmarks,
+  cell edits, filtration-value updates, diagram means and kernels.
+
+Each package owns its complete API documentation. The umbrella focuses on
+how the pieces compose and on interpretation of the resulting objects. Small
+documentation examples demonstrate behavior; they do not replace calibration
+or sensitivity checks for a scientific study.
 
 ## Project links
 

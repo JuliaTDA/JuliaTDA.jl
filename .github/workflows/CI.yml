@@ -22,8 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1'        # latest stable 1.x; 1.10 cannot resolve the current
-                       # dependency stack (Downloads stdlib pin conflict)
+          - '1.10'     # minimum supported
+          - '1'        # latest stable 1.x
         os:
           - ubuntu-latest
         arch:
@@ -35,23 +35,18 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v2
-      # The sibling packages are not yet registered in the General registry, so
-      # `develop` them straight from their GitHub URLs before resolving/testing.
-      - name: Develop unregistered ecosystem packages
-        run: |
-          julia --project=. -e '
-            using Pkg
-            Pkg.develop([
-              PackageSpec(url = "https://github.com/JuliaTDA/MetricSpaces.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/TDAmapper.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/TDAplots.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/Ripserer.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/PersistenceDiagrams.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/ToMATo.jl"),
-            ])
-            Pkg.instantiate()'
+      - name: Resolve public ecosystem sources in this checkout
+        run: julia --startup-file=no scripts/setup.jl
       - uses: julia-actions/julia-buildpkg@v1
+      - name: Test bundled multiparameter package
+        run: julia --project=. -e 'using Pkg; Pkg.test("MultiparameterPersistence")'
       - uses: julia-actions/julia-runtest@v1
+      - name: Leakage-safe MLJ tuning example
+        run: |
+          julia --project=. -e 'using Pkg; Pkg.add(["MLJ", "MLJDecisionTreeInterface", "CairoMakie"])'
+          julia --project=. examples/tuned_ph_pipeline.jl
+      - name: Cross-package smoke pipelines, including rendered figures
+        run: julia --startup-file=no --project=. scripts/smoke.jl
       - uses: julia-actions/julia-processcoverage@v1
       - uses: codecov/codecov-action@v4
         with:

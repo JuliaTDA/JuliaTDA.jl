@@ -12,7 +12,9 @@ graph** → run **`tomato`** → colour the points by their assigned cluster.
 ```@example tomato
 using JuliaTDA
 using CairoMakie
+using Random
 CairoMakie.activate!(type = "png")
+Random.seed!(17)
 const DS = JuliaTDA.MetricSpaces.Datasets
 nothing # hide
 ```
@@ -20,7 +22,7 @@ nothing # hide
 ## A noisy multi-blob dataset
 
 ```@example tomato
-X = DS.three_clusters(600)
+X = DS.three_clusters(240)
 mat = JuliaTDA.MetricSpaces.as_matrix(X)   # 2 x n matrix of coordinates
 fig = Figure()
 ax = Axis(fig[1, 1]; title = "raw data", aspect = DataAspect())
@@ -49,6 +51,9 @@ extrema(dens)
 
 [`proximity_graph`](@ref) connects each point to its near neighbours within
 radius `ϵ`, falling back to nearest neighbours where the ball is too sparse.
+Its default neighbor cap limits each local search result before an undirected
+union of edges; it is not an uncapped radius graph, and final degree can exceed
+the cap because other vertices may link back to a point.
 
 ```@example tomato
 g = proximity_graph(X, 0.5)
@@ -75,8 +80,25 @@ scatter!(ax, mat[1, :], mat[2, :]; markersize = 6, color = clusters, colormap = 
 fig
 ```
 
-The `births_deaths` dictionary records the prominence of each candidate peak;
-plotting the gaps between consecutive prominences is the standard way to read
-off a good `τ` (a large gap separates "real" clusters from noise). TDAplots
-provides [`tomato_persistence_plot`](@ref) and [`tomato_graph_plot`](@ref) for
-exactly this kind of diagnostic.
+The dictionary is indexed by original peak-point ids, while `clusters` contains
+renumbered labels. Deaths are recorded only for merges performed at the supplied
+`τ`; remaining peaks have the `Inf` sentinel. To inspect more of the merge
+structure, run an exploratory pass with `τ = Inf`:
+
+```@example tomato
+_, full_merges = tomato(X, g, dens, Inf)
+finite_prominences = sort([bd[1] - bd[2] for bd in values(full_merges) if isfinite(bd[2])])
+(merged_peaks = length(finite_prominences), surviving_peaks =
+ count(bd -> !isfinite(bd[2]), values(full_merges)))
+```
+
+A large gap between finite prominence values can suggest candidate thresholds.
+This is a diagnostic, not automatic evidence of true population clusters.
+`Inf` entries mean that this run recorded no merge for those peaks; they do not
+represent infinite density drops. Inspect graph connectivity, density ties and
+the implementation's merge behavior before interpreting survivor counts. The threshold has density units
+and should be reconsidered after changing the density estimator or its `k`.
+TDAplots provides [`tomato_persistence_plot`](@ref) and
+[`tomato_graph_plot`](@ref) for inspecting these outputs. Read the owning
+package's guide before interpreting the capped graph, ties or the strict merge
+inequality.

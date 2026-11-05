@@ -45,10 +45,12 @@ dgms = [ripserer(cloud) for cloud in clouds]
 dgms[1]   # H0 and H1 of the first cloud
 ```
 
-The number of high-persistence points in `H₁` counts the loops:
+Inspect the interval count, then look at lifetimes. With noisy observations,
+short-lived extra features can occur; the total count alone does not establish
+the number of meaningful loops:
 
 ```@example ph
-[length(d[2]) for d in dgms]   # H1 feature counts: 1, 2, 1
+[length(d[2]) for d in dgms]
 ```
 
 ## Visualising a diagram
@@ -74,13 +76,17 @@ fixed-length vector. Two standard choices:
 * [`PersistenceImage`](@ref) — a smoothed, rasterised image of the diagram.
   `PersistenceImage(diagrams; size = s)` produces an `s × s` image.
 
-We fit both on the `H₁` parts of all diagrams, then concatenate their outputs
-into one feature row per sample.
+For this small feature-format demonstration we fit both on the `H₁` parts of
+the **first two** diagrams and reuse those definitions on all three samples.
+The third is held out from descriptor fitting. Concatenate outputs into one
+feature row per sample. This is not a classifier evaluation; a real evaluation
+must also fit preprocessing and any tuning inside training folds.
 
 ```@example ph
 h1s  = [d[2] for d in dgms]
-land = Landscape(1, h1s; length = 20)   # range inferred from the diagrams
-img  = PersistenceImage(h1s; size = 5)  # 5 x 5 image
+training_h1s = h1s[1:2]
+land = Landscape(1, training_h1s; length = 20) # training-only range
+img  = PersistenceImage(training_h1s; size = 5) # training-only 5 x 5 grid
 
 feats = map(h1s) do h1
     vcat(land(h1), vec(img(h1)))        # 20 landscape + 25 image = 45 features
@@ -100,3 +106,8 @@ Other vectorizations exported by JuliaTDA include [`BettiCurve`](@ref),
 `Silhuette`, `Life`/`Midlife`, and the entropy curves `LifeEntropy` /
 `MidlifeEntropy`; diagram-to-diagram distances `Bottleneck` and `Wasserstein`
 are available too.
+
+Different descriptors preserve different aspects of a diagram. Set distance
+units and essential-interval policy consistently across samples. Compare
+baselines without topological features, and use the
+[nested-CV tutorial](tuned_ph_pipeline.md) when assessing prediction quality.

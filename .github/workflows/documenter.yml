@@ -25,27 +25,11 @@ jobs:
         with:
           version: '1'
       - uses: julia-actions/cache@v2
-      # Develop the unregistered ecosystem packages into BOTH the package and
-      # the docs environments before building the site.
-      - name: Develop unregistered ecosystem packages
-        run: |
-          julia --project=docs -e '
-            using Pkg
-            # JuliaTDA itself must be in the SAME develop call as the siblings:
-            # a separate first call fails to resolve because JuliaTDA is an
-            # unregistered dep of the docs env with no source yet.
-            Pkg.develop([
-              PackageSpec(url = "https://github.com/JuliaTDA/MetricSpaces.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/TDAmapper.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/TDAplots.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/Ripserer.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/PersistenceDiagrams.jl"),
-              PackageSpec(url = "https://github.com/JuliaTDA/ToMATo.jl"),
-              PackageSpec(path = pwd()),
-            ])
-            Pkg.instantiate()'
+      - name: Resolve documentation environment from public sources
+        run: julia --startup-file=no docs/setup.jl
       - name: Build and deploy
         env:
+          JULIATDA_DOCS_DEPLOY: 'true'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}          # for gh-pages deploy
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}       # optional SSH deploy key
         run: julia --project=docs docs/make.jl

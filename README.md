@@ -13,7 +13,20 @@ using JuliaTDA
 
 re-exports the whole stack: metric-space geometry, the Mapper algorithm,
 Makie-based plotting, persistent homology, persistence-diagram tooling /
-vectorizations, and ToMATo clustering.
+vectorizations, statistical inference, ToMATo clustering, and the bundled
+two-parameter reference algorithms.
+
+## Visual workbench
+
+[MapperStudio](https://github.com/JuliaTDA/MapperStudio.jl) is a local, browser-based Mapper
+and TDA workbench with calculations in Julia. It includes linked graph/point
+selection, saved populations and statistical Explain, persistence diagrams,
+cover sensitivity, ToMATo, time-series PH, cubical image analysis and finite-grid
+multiparameter views. Its isolated app environment keeps web dependencies out
+of `using JuliaTDA`. With Julia 1.12 or newer, install it in package mode with
+`app add https://github.com/JuliaTDA/MapperStudio.jl`, then run `mapperstudio`
+in your terminal. See the [Ayasdi research](https://github.com/JuliaTDA/MapperStudio.jl/blob/main/docs/ayasdi-research.md)
+for historical feature correspondence and explicit first-release limits.
 
 ## The ecosystem
 
@@ -24,7 +37,13 @@ vectorizations, and ToMATo clustering.
 | [TDAplots.jl](https://github.com/JuliaTDA/TDAplots.jl) | Plotting (Makie) | `mapper_plot`, `metricspace_plot`, the interactive `mapper_explorer`, persistence / barcode plots, 21 graph layouts |
 | [TDARipserer.jl](https://github.com/JuliaTDA/Ripserer.jl) | Persistent homology | `ripserer`, `Rips`, `Alpha`, `Cubical`, `EdgeCollapsedRips`, … |
 | [TDAPersistenceDiagrams.jl](https://github.com/JuliaTDA/PersistenceDiagrams.jl) | Diagrams & ML | `PersistenceDiagram`, `Bottleneck`, `Wasserstein`, `Landscape`, `PersistenceImage`, `BettiCurve`, entropy curves, MLJ integration |
+| [PersistenceInference.jl](https://github.com/JuliaTDA/PersistenceInference.jl) | Statistical inference | Confidence bands, multiplier bootstrap, maximum-persistence significance and HSIC independence tests |
 | [ToMATo.jl](https://github.com/JuliaTDA/ToMATo.jl) | Clustering | `tomato`, `proximity_graph` |
+| [MultiparameterPersistence](lib/MultiparameterPersistence) | Two-parameter reference algorithms | Function-Rips bifiltrations, F₂ Hilbert/Koszul Betti/Euler surfaces, signed measures and optional MLJ features |
+
+The [P2 examples](examples/p2/README.md) also cover ECC/ECT/SECT, optimal cycles
+and filling volumes, time-series embeddings, image filtrations and trainable
+MLP/Flux/Lux Mapper filters. Heavy integrations use optional package extensions.
 
 ### How they compose
 
@@ -43,16 +62,17 @@ using JuliaTDA
 # The Mapper building blocks live in submodules; bring them into scope:
 using JuliaTDA.ImageCovers, JuliaTDA.IntervalCovers, JuliaTDA.Refiners, JuliaTDA.Nerves
 using Statistics: mean
+using CairoMakie # install this optional backend in your analysis environment
 
 # Datasets are a submodule of MetricSpaces — access them qualified:
-X = JuliaTDA.MetricSpaces.Datasets.sphere(500)   # 500 points on a circle
+X = JuliaTDA.MetricSpaces.Datasets.sphere(240)   # 240 points on a circle
 
-# A per-point eccentricity filter (high for outliers, low near the centre):
-f = eccentricity(X)
+# Cover the circle by x-coordinate; cluster each strip in the original geometry:
+f = first.(X)
 
 # Run the classical Mapper and plot it, coloured by the filter:
 M = classical_mapper(X, R1Cover(f, Uniform(length = 10, expansion = 0.3)),
-                     DBscan(), SimpleNerve())
+                     DBscan(radius = 0.2), SimpleNerve())
 mapper_plot(M; node_values = [mean(f[c]) for c in M.C])
 
 # Persistent homology of a point cloud:
@@ -68,6 +88,7 @@ rows, …) works:
 
 ```julia
 tbl = (x = randn(200), y = randn(200), z = randn(200), label = rand(["a","b"], 200))
+using Statistics: std
 X   = euclidean_space(tbl; cols = (:x, :y, :z), standardize = true)
 M   = classical_mapper(X, R1Cover(eccentricity(X), Uniform(length = 8)),
                        DBscan(), SimpleNerve())
@@ -91,30 +112,25 @@ Both `MetricSpaces` and `ToMATo` export a function named `knn_density`, with
 
 ### Development install (now)
 
-Until the pure-Julia packages are registered in the General registry, build the
-environment by `develop`-ing the sibling repositories from their GitHub URLs:
+Registration is deferred. From a checkout of this repository, run:
 
-```julia
-using Pkg
-Pkg.develop([
-    PackageSpec(url = "https://github.com/JuliaTDA/MetricSpaces.jl"),
-    PackageSpec(url = "https://github.com/JuliaTDA/TDAmapper.jl"),
-    PackageSpec(url = "https://github.com/JuliaTDA/TDAplots.jl"),
-    PackageSpec(url = "https://github.com/JuliaTDA/Ripserer.jl"),
-    PackageSpec(url = "https://github.com/JuliaTDA/PersistenceDiagrams.jl"),
-    PackageSpec(url = "https://github.com/JuliaTDA/ToMATo.jl"),
-])
-Pkg.develop(PackageSpec(url = "https://github.com/JuliaTDA/JuliaTDA.jl"))
+```sh
+julia --startup-file=no scripts/setup.jl
 ```
 
-If you have the repositories checked out side by side locally, you can instead
-`develop` them by path:
+This resolves the seven sibling packages from their public GitHub repositories
+and the bundled multiparameter package in one transaction. No sibling checkouts
+are required. To use local sibling checkouts instead, run
+`julia scripts/setup.jl --local`. The local directory names are `MetricSpaces.jl`,
+`TDAmapper.jl`, `TDAplots.jl`, `ToMATo.jl`, `TDARipserer.jl`,
+`TDAPersistenceDiagrams.jl` and `PersistenceInference.jl`.
 
-```julia
-using Pkg
-Pkg.develop([PackageSpec(path = "../$(p).jl") for p in
-    ("MetricSpaces", "TDAmapper", "TDAplots", "TDARipserer",
-     "TDAPersistenceDiagrams", "ToMATo")])
+To prepare a separate analysis environment, pass its directory:
+
+```sh
+julia scripts/setup.jl /path/to/shape-analysis
+julia --project=/path/to/shape-analysis -e 'using Pkg; Pkg.add("CairoMakie")'
+julia --project=/path/to/shape-analysis scripts/smoke.jl
 ```
 
 `TDARipserer` and `TDAPersistenceDiagrams` are independent experimental forks
@@ -137,9 +153,26 @@ using Pkg; Pkg.add("JuliaTDA")
 
 ## Documentation
 
-Full documentation, including three worked examples (Mapper exploration,
-persistent homology for ML, and ToMATo clustering), lives at
-<https://JuliaTDA.github.io/JuliaTDA.jl/>.
+The source documentation has several entry points:
+
+- [Your first shape analysis](docs/src/getting_started.md): install the local
+  stack, analyze a circle, read its persistence diagram and inspect Mapper nodes.
+- [Choosing a workflow](docs/src/workflows.md): select methods by question and
+  understand optional dependencies and training-only fitting.
+- [Reading topological results](docs/src/concepts.md): distinguish clouds,
+  complexes, diagrams, Mapper graphs, density modes and two-parameter invariants.
+- [Worked examples](docs/src/index.md): tables and Mapper, PH for learning,
+  ToMATo, inference, Euler/image/time-series workflows and changing complexes.
+- [Troubleshooting and reproducibility](docs/src/troubleshooting.md): names,
+  extensions, plotting backends, cost and interpretation pitfalls.
+
+The hosted site is <https://JuliaTDA.github.io/JuliaTDA.jl/>; local source pages
+can contain changes that have not yet been deployed. From this checkout, build locally with:
+
+```sh
+julia docs/setup.jl
+julia --project=docs docs/make.jl
+```
 
 ## License
 
