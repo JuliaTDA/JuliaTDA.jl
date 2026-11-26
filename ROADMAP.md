@@ -1,6 +1,6 @@
 # JuliaTDA ecosystem roadmap
 
-**Canonical roadmap — reviewed 5 November 2026. GitHub source releases authorized; General registration remains deferred.**
+**Canonical roadmap — reviewed 25 November 2026. General registration remains deferred.**
 
 This is the single source of truth for unfinished work across the JuliaTDA ecosystem. It supersedes the planning sections in `gap-analysis.md`, `2026 Roadmap.md`, `2026 Roadmap — Phase 5 Addendum.md`, and `2026 Roadmap — July 2026 Review.md`. Those files remain useful as historical reviews, but new status and priority decisions belong here.
 
@@ -138,6 +138,45 @@ release alone does not make `Pkg.add("JuliaTDA")` available from General.
 - Legacy Mapper issues #2, #3, #5 and #6 and ToMATo documentation issues #1 and #2 are closed with implementation evidence. Mapper #7 now tracks only arbitrary n-dimensional generalization; its two-dimensional portion is implemented.
 - See [the maintenance verification report](docs/maintenance/2026-11-05.md) for exact commands, source revisions, failed attempts and validation limits.
 
+## Next release — correctness, performance, and algorithm expansion
+
+Track measured bottlenecks, CPU and GPU experiments, and cross-framework benchmarks in the [performance roadmap](PERFORMANCE_ROADMAP.md).
+
+This release focuses on barcode correctness and exact optimizations. The
+new backends are opt-in and use the existing implementations as references.
+
+| ID | Status | Work | Package | Acceptance |
+|---|---|---|---|---|
+| **P4.1** | Implemented | Fix edge collapse and bound its storage by graph size | TDARipserer | Edgeless graphs and nonzero vertex births yield the same barcodes as Rips. Store edge state and retained weights by edge instead of in dense square arrays. Validate both sparse and dense inputs, thresholds, and ties. |
+| **P4.2** | Implemented | Build thresholded Euclidean Rips from a radius graph | TDARipserer | Add an explicit indexed point-cloud path through `Rips` and `ripserer`. Preserve the existing pairwise path and document endpoint rounding. Validate inclusive boundaries, distinct vertices, sparse and dense clouds, and allocation and runtime differences. |
+| **P4.3** | Implemented | Accelerate finite-grid multiparameter invariants | MultiparameterPersistence | Use prefix sums for Euler surfaces, union-find for H₀ Hilbert surfaces, and incremental exact F₂ boundary ranks for higher-dimensional Hilbert surfaces. Compare complete grids to the reference, including ties and irregular grades. |
+| **P4.4** | Implemented | Add RedZeD as an optional exact Rips backend | TDARipserer | Validate F₂ interval endpoints against cohomology and preserve the upstream MIT attribution. Explicitly document the supported inputs and representation limits. Compare dense and sparse baselines on shared matrices. |
+| **P4.5** | Implemented | Add a Flash Cubical–style CPU backend | TDARipserer | Compute 2D H₀/H₁ and 3D H₀/H₂ using grid union-find and duality. Cover 3D H₁ with the existing cohomology engine where requested. Match vertex lower-star barcodes, including ties, finite thresholds, and exterior boundaries. |
+| **P4.6** | Implemented | Track compatible zigzag representatives | TDARipserer | Expose optional F₂ chains along each bar. Verify simplex activity, cycles, arrow compatibility, and independent homology bases at each state. Keep barcode-only streaming available. |
+| **P4.7** | Implemented | Add persistence-guided AdaMapper | TDAmapper | Localize persistent H₁ loops through death triangles and refine the cover in the resulting lens intervals. Validate loop and branch fixtures against regular Mapper, and document threshold and tie behavior. |
+
+The implementations are available in the local sources as of **25 November
+2026**. The [verification and performance results](docs/maintenance/2026-11-25-roadmap.md) record the acceptance checks. The [worked examples](docs/src/examples/performance.md) cover the opt-in APIs. The
+existing cohomology and barcode-only zigzag paths remain the defaults.
+
+Local Julia 1.12.5 comparisons used the median of five warm one-thread runs.
+The thresholded 10,000-point torus through H₂ took 2.21 s with the pairwise
+path and 87 ms with the radius graph. Allocations fell from 2,312 to 37 MiB.
+A 256×256 image took 70 ms with cohomology and 20 ms with cubical union-find.
+The tested 3D volume took 276 ms and 260 ms respectively, with more allocations
+in the latter. On a 747-simplex grid fixture, the H₁ Hilbert surface took
+283 ms with pointwise homology and 1.4 ms with the incremental sweep.
+
+Validation passed for TDARipserer, TDAmapper, MultiparameterPersistence,
+and JuliaTDA on Julia 1.12.5. The JuliaTDA suite also passed on 1.10.10, and
+the new TDARipserer backend and zigzag tests passed on 1.6.7. The umbrella
+documentation built and executed the worked examples.
+
+Research references include [RedZeD](https://arxiv.org/abs/2606.06310),
+[Flash Cubical](https://arxiv.org/abs/2606.04801),
+[compatible zigzag representatives](https://link.springer.com/article/10.1007/s00453-026-01386-4),
+and [AdaMapper](https://arxiv.org/abs/2606.04464).
+
 ## Watch list and explicit non-goals
 
 - Watch: GPU/distributed PH, persistent Laplacians, Reeb graphs, magnitude, and new stable upstream libraries that JuliaTDA could wrap instead of reimplement.
@@ -163,7 +202,8 @@ These are not separate feature projects; apply them to every roadmap item.
 All P1, P2 and P3 initial scopes are implemented. The November maintenance pass
 consolidates the umbrella checkout, installs public source dependencies without
 sibling checkouts, checks cross-package behavior and reconciles legacy issues.
-Publication, registration and release tags remain explicitly deferred.
+The November source releases cover the earlier maintenance milestone.
+General registration and registry-only installation validation remain deferred.
 
 Larger multiparameter algorithms, enterprise Studio scale and research-paper
 reproductions beyond the existing partial Mapper 2007 reproduction are separate

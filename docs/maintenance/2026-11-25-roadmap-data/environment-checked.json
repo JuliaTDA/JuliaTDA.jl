@@ -1,0 +1,65 @@
+{
+  "machine": {
+    "platform": "Linux-7.0.0-43-generic-x86_64-with-glibc2.39",
+    "logical_cpus": 32,
+    "cpu": "13th Gen Intel(R) Core(TM) i9-13980HX"
+  },
+  "source": {
+    "JuliaTDA.jl": {
+      "revision": "aa1fad5eef867c9acc6449fd189a4bfd7632a358",
+      "working_tree_sha256": "ab0616004d98f86e0b4906c1db3802aa9aa33f529e31d852e23c4363ffbe85fc",
+      "working_tree_changes": [
+        " M CHANGELOG.md",
+        " M ROADMAP.md",
+        " M docs/make.jl",
+        " M docs/src/api.md",
+        " M docs/src/api_analysis.md",
+        " M lib/MultiparameterPersistence/CHANGELOG.md",
+        " M lib/MultiparameterPersistence/src/invariants.jl",
+        " M lib/MultiparameterPersistence/test/runtests.jl",
+        " M test/runtests.jl",
+        "?? benchmarks/",
+        "?? docs/maintenance/2026-11-25-performance-evidence.zip",
+        "?? docs/maintenance/2026-11-25-roadmap.md",
+        "?? docs/src/examples/performance.md",
+        "?? test/ada_mapper.jl"
+      ]
+    },
+    "TDARipserer.jl": {
+      "revision": "159d127b1b08c8560a8630c17433d601cdc453b6",
+      "working_tree_sha256": "dc7fb3b7e0ac3f857ce364c60bfd07ddea557307612e0ff1f11f2787e7d8b9de",
+      "working_tree_changes": [
+        " M CHANGELOG.md",
+        " M Project.toml",
+        " M docs/src/api.md",
+        " M src/TDARipserer.jl",
+        " M src/computation/cohomology.jl",
+        " M src/computation/ripserer.jl",
+        " M src/computation/zerodimensional.jl",
+        " M src/computation/zigzag.jl",
+        " M src/filtrations/edgecollapse.jl",
+        " M src/filtrations/rips.jl",
+        " M test/computation/zigzag.jl",
+        " M test/runtests.jl",
+        "?? benchmark/reduced_rips.jl",
+        "?? src/computation/cubical_union_find.jl",
+        "?? src/computation/reduced_rips.jl",
+        "?? src/computation/redzed.jl",
+        "?? src/vendor/",
+        "?? test/computation/fast_backends.jl",
+        "?? test/computation/reduced_rips.jl"
+      ]
+    },
+    "TDAPersistenceDiagrams.jl": {
+      "revision": "85f37ad6262fa4faebc99acbf58aaf02f34b42a3",
+      "working_tree_sha256": "d17c3725902a80e14c5ae0b8f540169758cc1250faf4d02de5f75bff960b58e7",
+      "working_tree_changes": [
+        " M CHANGELOG.md",
+        " M src/kernels.jl",
+        " M test/kernels.jl"
+      ]
+    },
+    "manifest_sha256": "cd1aa0366a486b3f623f22ecbd9203a68e68c63f7b05cd6a9b6fa5fcb43fc764"
+  },
+  "python": "3.11.13"
+}

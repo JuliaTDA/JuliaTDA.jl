@@ -19,6 +19,7 @@ MetricSpaces.kde
 ```@docs
 TDAmapper.euclidean_space
 TDAmapper.node_statistics
+TDAmapper.ada_mapper
 ```
 
 ## Plotting (TDAplots.jl)

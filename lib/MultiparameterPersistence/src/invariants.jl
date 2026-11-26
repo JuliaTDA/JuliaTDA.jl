@@ -41,12 +41,119 @@ function _grid(scales, levels; max_grid=4096)
     return x, y
 end
 
+function _scale_order(F, simplex_size)
+    indices = findall(s -> length(s) == simplex_size, F.simplices)
+    return sort!(indices; by=i -> F.grades[i][1])
+end
+
+function _component_root!(parents, i)
+    while parents[i] != i
+        parents[i] = parents[parents[i]]
+        i = parents[i]
+    end
+    return i
+end
+
+function _component_grid(F, scales, levels)
+    vertex_ids = _scale_order(F, 1)
+    edge_ids = _scale_order(F, 2)
+    labels = Dict(only(F.simplices[id]) => i for (i, id) in enumerate(vertex_ids))
+    endpoints = [NTuple{2,Int}(map(v -> labels[v], F.simplices[id])) for id in edge_ids]
+    values = zeros(Int, length(scales), length(levels))
+    parents = collect(eachindex(vertex_ids))
+    sizes = similar(parents)
+
+    for (j, level) in enumerate(levels)
+        parents .= eachindex(parents)
+        fill!(sizes, 1)
+        vertex = edge = 1
+        components = 0
+        for (i, scale) in enumerate(scales)
+            while vertex <= length(vertex_ids) && F.grades[vertex_ids[vertex]][1] <= scale
+                components += F.grades[vertex_ids[vertex]][2] <= level
+                vertex += 1
+            end
+            while edge <= length(edge_ids) && F.grades[edge_ids[edge]][1] <= scale
+                u, v = endpoints[edge]
+                grade = F.grades[edge_ids[edge]]
+                edge += 1
+                grade[2] <= level || continue
+                a, b = _component_root!(parents, u), _component_root!(parents, v)
+                a == b && continue
+                if sizes[a] < sizes[b]
+                    a, b = b, a
+                end
+                parents[b] = a
+                sizes[a] += sizes[b]
+                components -= 1
+            end
+            values[i, j] = components
+        end
+    end
+    return values
+end
+
+function _boundary_supports(F, rows, columns)
+    row = Dict(F.simplices[id] => i for (i, id) in enumerate(rows))
+    return [BitSet(row[face] for face in _faces(F.simplices[id])) for id in columns]
+end
+
+function _raise_rank!(basis, support)
+    column = copy(support)
+    while !isempty(column)
+        p = last(column)
+        current = basis[p]
+        if isnothing(current)
+            basis[p] = column
+            return 1
+        end
+        symdiff!(column, current)
+    end
+    return 0
+end
+
+function _boundary_rank_grid(F, scales, levels, dim)
+    lower = _scale_order(F, dim)
+    cells = _scale_order(F, dim + 1)
+    higher = _scale_order(F, dim + 2)
+    down = _boundary_supports(F, lower, cells)
+    up = _boundary_supports(F, cells, higher)
+    down_basis = Vector{Union{Nothing,BitSet}}(nothing, length(lower))
+    up_basis = Vector{Union{Nothing,BitSet}}(nothing, length(cells))
+    values = zeros(Int, length(scales), length(levels))
+    for (j, level) in enumerate(levels)
+        fill!(down_basis, nothing)
+        fill!(up_basis, nothing)
+        c = h = 1
+        active = rank_down = rank_up = 0
+        for (i, scale) in enumerate(scales)
+            while c <= length(cells) && F.grades[cells[c]][1] <= scale
+                if F.grades[cells[c]][2] <= level
+                    active += 1
+                    rank_down += _raise_rank!(down_basis, down[c])
+                end
+                c += 1
+            end
+            while h <= length(higher) && F.grades[higher[h]][1] <= scale
+                if F.grades[higher[h]][2] <= level
+                    rank_up += _raise_rank!(up_basis, up[h])
+                end
+                h += 1
+            end
+            values[i, j] = active - rank_down - rank_up
+        end
+    end
+    return values
+end
+
 """
     hilbert_function(F; scales, levels, dim=0, max_grid=4096,
                      max_chain=2048, max_workspace=100_000_000)
 
 Exact dimensions of H`dim` at each grid grade over F₂. The complex must include
 dimension `dim+1` if deaths in that dimension are to be represented.
+For each function level, the computation sweeps the scale axis using union-find
+in H₀ and incrementally reduced F₂ boundary columns in higher degrees.
 
 Returns a [`GridInvariant`](@ref) whose entries are pointwise topological Betti
 counts, not free-resolution Betti numbers. Both axes must be finite, nonempty
@@ -60,7 +167,8 @@ function hilbert_function(F::Bifiltration; scales, levels, dim::Integer=0, max_g
     dim >= 0 || throw(ArgumentError("dim must be nonnegative"))
     x, y = _grid(scales, levels; max_grid=max_grid)
     _computation_limits(F,length(x)*length(y),max_chain,max_workspace)
-    return GridInvariant(x, y, [_dimension(_homology(F, dim, (a, b))) for a in x, b in y])
+    values = dim == 0 ? _component_grid(F, x, y) : _boundary_rank_grid(F, x, y, dim)
+    return GridInvariant(x, y, values)
 end
 
 """
@@ -77,8 +185,20 @@ exists, including homology created by dimension truncation.
 """
 function euler_surface(F::Bifiltration; scales, levels, max_grid=4096)
     x, y = _grid(scales, levels; max_grid=max_grid)
-    values = [sum((isodd(length(s)) ? 1 : -1) for (s, g) in zip(F.simplices, F.grades)
-                  if g[1] <= a && g[2] <= b; init=0) for a in x, b in y]
+    values = zeros(Int, length(x), length(y))
+    for (simplex, (scale, level)) in zip(F.simplices, F.grades)
+        i = searchsortedfirst(x, scale; lt=(<))
+        j = searchsortedfirst(y, level; lt=(<))
+        if i <= length(x) && j <= length(y)
+            values[i, j] += isodd(length(simplex)) ? 1 : -1
+        end
+    end
+    for j in axes(values, 2), i in 2:size(values, 1)
+        values[i, j] += values[i - 1, j]
+    end
+    for j in 2:size(values, 2), i in axes(values, 1)
+        values[i, j] += values[i, j - 1]
+    end
     return GridInvariant(x, y, values)
 end
 

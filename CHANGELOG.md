@@ -2,6 +2,15 @@
 
 Notable changes to JuliaTDA are recorded here.
 
+## Unreleased
+
+- Document the radius-graph and optional RedZeD and cubical persistence paths,
+  compatible zigzag cycles, and persistence-guided Mapper.
+- Add reproducible cross-framework benchmarks, including complete barcode checks,
+  stage timings, and optional CUDA prototypes.
+- Exercise AdaMapper through the umbrella on circle and branch fixtures.
+- Accelerate exact Hilbert and Euler surfaces in the bundled multiparameter library.
+
 ## v0.1.0 — 5 November 2026
 
 - Consolidate the P1–P3 umbrella integrations, runnable examples, numerical

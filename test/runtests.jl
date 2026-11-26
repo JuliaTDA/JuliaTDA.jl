@@ -10,6 +10,7 @@ using Test
 
 include("p3.jl")
 include("p1.jl")
+include("ada_mapper.jl")
 
 Aqua.test_all(JuliaTDA)
 

@@ -72,3 +72,13 @@ TDARipserer.suggest_delay
 TDARipserer.sliding_window_ph
 TDARipserer.image_persistence
 ```
+
+## Zigzag persistence
+
+```@docs
+TDARipserer.ZigzagEvent
+ZigzagPersistence
+TDARipserer.zigzag_persistence
+TDARipserer.zigzag_diagrams
+TDARipserer.ZigzagRepresentative
+```

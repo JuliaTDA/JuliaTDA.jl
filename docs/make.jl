@@ -59,6 +59,7 @@ makedocs(;
             "ToMATo clustering" => "examples/tomato_clustering.md",
             "P2 expansion workflows" => "examples/p2.md",
             "Changing shapes and comparing diagrams" => "examples/p3.md",
+            "Fast persistence and adaptive Mapper" => "examples/performance.md",
         ],
         "Troubleshooting and reproducibility" => "troubleshooting.md",
         "API reference" => [

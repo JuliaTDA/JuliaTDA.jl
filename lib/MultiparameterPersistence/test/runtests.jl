@@ -47,6 +47,26 @@ import MLJModelInterface as MMI
     @test_throws ArgumentError GridInvariant([0.],[0.],zeros(2,2))
 end
 
+@testset "Sweeps agree with pointwise finite-grid invariants" begin
+    MP = MultiparameterPersistence
+    f = Bifiltration(
+        [(8,), (2,), (9,), (10,), (2, 8), (2, 9), (8, 9), (2, 8, 9), (9, 10)],
+        [(-2, 0), (-2, -1), (0, -1), (0, 0), (-1, 0), (0, 0),
+         (0, 1), (1, 2), (2, 1)],
+    )
+    empty = Bifiltration([], [])
+    for F in (f, empty), scales in ([-3.0, -0.0, 1.0, 2.0], [-0.0], [0.0, 0.5, 3.0]),
+        levels in ([-2.0, -0.0, 1.0, 2.0], [-0.0], [0.0, 2.0])
+        expected_euler = zeros(Int, length(scales), length(levels))
+        for dim in 0:3
+            expected = [MP._dimension(MP._homology(F, dim, (a, b))) for a in scales, b in levels]
+            @test hilbert_function(F; scales, levels, dim).values == expected
+            expected_euler .+= (-1)^dim .* expected
+        end
+        @test euler_surface(F; scales, levels).values == expected_euler
+    end
+end
+
 @testset "Signed measure reconstruction and bounded-Lipschitz features" begin
     G=GridInvariant([0.,1.],[0.,2.],[1 2;3 1])
     m=signed_measure(G)
